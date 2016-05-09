@@ -2,6 +2,8 @@ import tkinter as tk
 
 from tkinter import ttk
 
+from streamdownloader.ResolutionDialog import ResolutionDialog
+
 class MainWindow(ttk.Frame):
     def __init__(self, master = None):
         ttk.Frame.__init__(self, master)
@@ -54,4 +56,4 @@ class MainWindow(ttk.Frame):
         pass
 
     def downloadVideo(self):
-        pass
+        self.dialog = ResolutionDialog(self)
