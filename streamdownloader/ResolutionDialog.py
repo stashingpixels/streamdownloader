@@ -14,7 +14,7 @@ class ResolutionDialog(tk.Toplevel):
         # Options for resolution
         resolutions = ["foo", "bar", "baz", "foobar", "foobaz", "foobarbaz"]
         self.resolution = tk.StringVar()
-        self.options = ttk.OptionMenu(self, self.resolution,
+        self.options = ttk.OptionMenu(self, self.resolution, resolutions[0],
             *resolutions)
         self.options.grid(row = 1, column = 0, columnspan = 2,
             sticky = (tk.W, tk.E))
