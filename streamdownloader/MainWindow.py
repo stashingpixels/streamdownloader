@@ -2,6 +2,7 @@ import tkinter as tk
 
 from tkinter import ttk
 
+import streamdownloader.guiutils as guiutils
 from streamdownloader.ResolutionDialog import ResolutionDialog
 
 class MainWindow(ttk.Frame):
@@ -39,9 +40,7 @@ class MainWindow(ttk.Frame):
         self.downloadButton.grid(row = 2, column = 0, columnspan = 3,
             sticky = (tk.W, tk.E))
 
-        # Add padding to children
-        for child in self.winfo_children():
-            child.grid_configure(padx = 5, pady = 5)
+        guiutils.setChildrenPadding(self, 5, 5)
 
         # Make column 1 expand
         self.columnconfigure(1, weight = 1)

@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+import streamdownloader.guiutils as guiutils
+
 class ResolutionDialog(tk.Toplevel):
     def __init__(self, master):
         tk.Toplevel.__init__(self, master)
@@ -26,9 +28,7 @@ class ResolutionDialog(tk.Toplevel):
             command = self.cancel)
         self.cancelButton.grid(row = 2, column = 1, sticky = (tk.W, tk.E))
 
-        # Add padding to children
-        for child in self.winfo_children():
-            child.grid_configure(padx = 5, pady = 5)
+        guiutils.setChildrenPadding(self, 5, 5)
 
         # Expand column 1 and 2 equally
         self.columnconfigure(0, weight = 1)
