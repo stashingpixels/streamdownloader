@@ -40,6 +40,16 @@ class MainWindow(ttk.Frame):
         self.downloadButton.grid(row = 2, column = 0, columnspan = 3,
             sticky = (tk.W, tk.E))
 
+        # Label showing download progress
+        self.progressLabel = ttk.Label(self, text = "Downloading...")
+        self.progressLabel.grid(row = 3, column = 0, columnspan = 3)
+
+        # Button to cancel download
+        self.cancelButton = ttk.Button(self, text = "Cancel",
+            command = self.cancelDownload)
+        self.cancelButton.grid(row = 4, column = 0, columnspan = 3,
+            sticky = (tk.W, tk.E))
+
         guiutils.setChildrenPadding(self, 5, 5)
 
         # Make column 1 expand
@@ -56,3 +66,6 @@ class MainWindow(ttk.Frame):
 
     def downloadVideo(self):
         self.dialog = ResolutionDialog(self)
+
+    def cancelDownload(self):
+        pass
