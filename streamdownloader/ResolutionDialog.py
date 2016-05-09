@@ -35,9 +35,8 @@ class ResolutionDialog(tk.Toplevel):
         self.columnconfigure(1, weight = 1)
 
         # Expand rows
-        self.rowconfigure(0, weight = 1)
-        self.rowconfigure(1, weight = 1)
-        self.rowconfigure(2, weight = 1)
+        for i in range(0, 3):
+            self.rowconfigure(i, weight = 1)
 
         # Configure self
         w = 300
