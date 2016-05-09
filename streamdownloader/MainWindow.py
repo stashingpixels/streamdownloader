@@ -16,7 +16,8 @@ class MainWindow(ttk.Frame):
         self.urlLabel = ttk.Label(self, text = "Stream URL:")
         self.urlLabel.grid(row = 0, column = 0, sticky = tk.W)
         self.urlEntry = ttk.Entry(self, textvariable = self.url)
-        self.urlEntry.grid(row = 0, column = 1, columnspan = 2, sticky = (tk.W, tk.E))
+        self.urlEntry.grid(row = 0, column = 1, columnspan = 2,
+            sticky = (tk.W, tk.E))
 
         # The file to which the stream should be downloaded
         self.filePath = tk.StringVar()
@@ -26,12 +27,15 @@ class MainWindow(ttk.Frame):
         self.fileEntry.grid(row = 1, column = 1, sticky = (tk.W, tk.E))
 
         # The button to browse the target file
-        self.browseButton = ttk.Button(self, text = "Browse...", command = self.browseFile)
+        self.browseButton = ttk.Button(self, text = "Browse...",
+            command = self.browseFile)
         self.browseButton.grid(row = 1, column = 2, sticky = (tk.W, tk.E))
 
         # The button to download the stream
-        self.downloadButton = ttk.Button(self, text = "Download", command = self.downloadVideo)
-        self.downloadButton.grid(row = 2, column = 0, columnspan = 3, sticky = (tk.W, tk.E))
+        self.downloadButton = ttk.Button(self, text = "Download",
+            command = self.downloadVideo)
+        self.downloadButton.grid(row = 2, column = 0, columnspan = 3,
+            sticky = (tk.W, tk.E))
 
         # Add padding to children
         for child in self.winfo_children():
