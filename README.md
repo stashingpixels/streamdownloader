@@ -1,4 +1,4 @@
-# stream-downloader
+# stream-downloader [![Build Status](https://travis-ci.org/stashingpixels/streamdownloader.svg?branch=master)](https://travis-ci.org/stashingpixels/streamdownloader)
 A small program for downloading livestreams and videos.
 
 ## Requirements
