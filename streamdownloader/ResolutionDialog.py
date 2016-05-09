@@ -51,7 +51,7 @@ class ResolutionDialog(tk.Toplevel):
         self.focus()
 
     def ok(self):
-        pass
+        self.destroy()
 
     def cancel(self):
-        pass
+        self.destroy()
