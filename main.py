@@ -1,4 +1,5 @@
 import tkinter as tk
+from streamdownloader.MainWindow import MainWindow
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -13,4 +14,5 @@ if __name__ == "__main__":
 
     root.geometry("%dx%d+%d+%d" % (w, h, x, y))
 
+    mainWindow = MainWindow(root)
     root.mainloop()
