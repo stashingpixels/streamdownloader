@@ -25,11 +25,12 @@ class StreamsThread(threading.Thread):
 
 
 class DownloadThread(threading.Thread):
-    def __init__(self, stream, output_file):
+    def __init__(self, stream, output_file, buffer_size=8192):
         threading.Thread.__init__(self)
         self.done = False
         self.stream = stream
         self.output_file = output_file
+        self.buffer_size = buffer_size
         self.total_size = 0
         self.io_error = None
         self.stream_error = None
@@ -70,7 +71,6 @@ class DownloadThread(threading.Thread):
             self.stream_error = stream_error
             return
 
-        buffer_size = 8192
         data = b""
 
         while not self._cancel.is_set():
@@ -81,7 +81,7 @@ class DownloadThread(threading.Thread):
                 continue
 
             try:
-                data = stream_file.read(buffer_size)
+                data = stream_file.read(self.buffer_size)
             except IOError as io_error:
                 self.io_error = io_error
                 break
