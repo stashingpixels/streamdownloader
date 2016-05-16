@@ -20,7 +20,7 @@ class StreamsThread(threading.Thread):
             self.no_plugin_error = no_plugin_error
         except livestreamer.PluginError as plugin_error:
             self.plugin_error = plugin_error
-            
+
         self.done = True
 
 
