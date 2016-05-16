@@ -27,9 +27,11 @@ class StreamsThread(threading.Thread):
 class DownloadThread(threading.Thread):
     def __init__(self, stream, output_file):
         threading.Thread.__init__(self)
+        self.done = False
         self.stream = stream
         self.output_file = output_file
         self.total_size = 0
+        self.io_error = None
         self._pause = threading.Event()
         self._resume = threading.Event()
         self._cancel = threading.Event()
@@ -54,6 +56,10 @@ class DownloadThread(threading.Thread):
                 self.download_to(f)
         except TypeError:
             self.download_to(self.output_file)
+        except IOError as io_error:
+            self.io_error = io_error
+
+        self.done = True
 
     def download_to(self, output_file):
         stream_file = self.stream.open()
@@ -73,7 +79,11 @@ class DownloadThread(threading.Thread):
             if data_size == 0:
                 break
 
-            output_file.write(data)
+            try:
+                output_file.write(data)
+            except IOError as io_error:
+                self.io_error = io_error
+                break
 
             # Use another variable because += is not thread-safe
             new_total_size = self.total_size + data_size
