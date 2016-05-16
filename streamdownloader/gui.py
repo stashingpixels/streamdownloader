@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.filedialog
 from tkinter import ttk
 
 from streamdownloader import thread
@@ -154,7 +155,15 @@ class MainWindow(ttk.Frame):
         self.master.destroy()
 
     def browse_file(self):
-        pass
+        file_path = tk.filedialog.asksaveasfilename(filetypes=[
+            ("MP4 files", ".mp4")
+        ])
+
+        if file_path != "":
+            if "." not in file_path:
+                file_path = file_path + ".mp4"
+
+            self.file_path.set(file_path)
 
     def download_video(self):
         self.dialog = ResolutionDialog(self, self.url_entry.get())
