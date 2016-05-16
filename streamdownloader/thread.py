@@ -16,11 +16,11 @@ class StreamsThread(threading.Thread):
         try:
             streams = livestreamer.streams(self.url)
             self.streams = streams
-        except livestreamer.PluginError as plugin_error:
-            self.plugin_error = plugin_error
         except livestreamer.NoPluginError as no_plugin_error:
             self.no_plugin_error = no_plugin_error
-
+        except livestreamer.PluginError as plugin_error:
+            self.plugin_error = plugin_error
+            
         self.done = True
 
 
