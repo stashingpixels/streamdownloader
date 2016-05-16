@@ -1,5 +1,7 @@
+import os
 import tkinter as tk
 import tkinter.filedialog
+import tkinter.messagebox
 from tkinter import ttk
 
 from streamdownloader import thread
@@ -166,6 +168,12 @@ class MainWindow(ttk.Frame):
             self.file_path.set(file_path)
 
     def download_video(self):
+        file_path = os.path.expanduser(self.file_path.get())
+        if not os.access(os.path.dirname(file_path), os.W_OK):
+            tk.messagebox.showerror("Invalid file",
+                                    "Cannot write to target file")
+            return
+
         self.dialog = ResolutionDialog(self, self.url_entry.get())
 
     def cancel_download(self):
