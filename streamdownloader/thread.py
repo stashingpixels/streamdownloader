@@ -1,5 +1,27 @@
 import threading
 
+import livestreamer
+
+
+class StreamsThread(threading.Thread):
+    def __init__(self, url):
+        threading.Thread.__init__(self)
+        self.url = url
+        self.done = False
+        self.error = None
+        self.streams = None
+
+    def run(self):
+        try:
+            streams = livestreamer.streams(self.url)
+            self.streams = streams
+        except livestreamer.PluginError as plugin_error:
+            self.error = plugin_error
+        except livestreamer.NoPluginError as no_plugin_error:
+            self.error = no_plugin_error
+
+        self.done = True
+
 
 class DownloadThread(threading.Thread):
     def __init__(self, stream, output_file):
