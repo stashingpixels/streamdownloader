@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from streamdownloader import thread
+
 
 def set_children_padding(object, padding_x, padding_y):
     for child in object.winfo_children():
@@ -8,8 +10,12 @@ def set_children_padding(object, padding_x, padding_y):
 
 
 class ResolutionDialog(tk.Toplevel):
-    def __init__(self, master):
+    def __init__(self, master, url):
         tk.Toplevel.__init__(self, master)
+
+        self.url = url
+        self.streams_thread = thread.StreamsThread(url)
+        self.streams_thread.start()
 
         # Label for displaying the status of the url checking thread
         self.status_label = ttk.Label(self, text="Checking URL...")
@@ -120,7 +126,7 @@ class MainWindow(ttk.Frame):
         pass
 
     def download_video(self):
-        self.dialog = ResolutionDialog(self)
+        self.dialog = ResolutionDialog(self, self.url_entry.get())
 
     def cancel_download(self):
         pass
