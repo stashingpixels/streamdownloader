@@ -1,5 +1,5 @@
 import unittest
-from streamdownloader.DownloadThread import DownloadThread
+from streamdownloader import thread
 
 class MockFile:
     def __init__(self):
@@ -34,7 +34,7 @@ class TestDownloadThread(unittest.TestCase):
     def setUp(self):
         self.stream = MockStream(40 * 1024)
         self.file = MockFile()
-        self.thread = DownloadThread(self.stream, self.file)
+        self.thread = thread.DownloadThread(self.stream, self.file)
 
     def test_starting_size(self):
         self.assertEqual(0, self.thread.totalSize)
