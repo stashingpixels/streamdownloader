@@ -16,6 +16,7 @@ class ResolutionDialog(tk.Toplevel):
         tk.Toplevel.__init__(self, master)
 
         self.url = url
+        self.stream = None
         self.streams_thread = thread.StreamsThread(url)
         self.streams_thread.start()
         self.master.after(self.CHECK_INTERVAL, self.check_thread)
@@ -87,6 +88,7 @@ class ResolutionDialog(tk.Toplevel):
                               sticky=(tk.W, tk.E))
 
     def ok(self):
+        self.stream = self.streams[self.resolution.get()]
         self.destroy()
 
     def cancel(self):
