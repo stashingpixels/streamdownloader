@@ -3,8 +3,8 @@ from streamdownloader import gui
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.columnconfigure(0, weight = 1)
-    root.rowconfigure(0, weight = 1)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
     root.title("Stream Downloader")
 
     x = 400

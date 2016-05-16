@@ -1,11 +1,12 @@
 import threading
 
+
 class DownloadThread(threading.Thread):
-    def __init__(self, stream, file):
+    def __init__(self, stream, output_file):
         threading.Thread.__init__(self)
         self.stream = stream
-        self.file = file
-        self.totalSize = 0
+        self.output_file = output_file
+        self.total_size = 0
         self._pause = threading.Event()
         self._resume = threading.Event()
         self._cancel = threading.Event()
@@ -13,6 +14,7 @@ class DownloadThread(threading.Thread):
     def cancel(self):
         if self._pause.is_set():
             self._resume.set()
+
         self._cancel.set()
 
     def pause(self):
@@ -25,14 +27,14 @@ class DownloadThread(threading.Thread):
 
     def run(self):
         try:
-            with open(self.file, "wb") as f:
-                self.downloadTo(f)
+            with open(self.output_file, "wb") as f:
+                self.download_to(f)
         except TypeError:
-            self.downloadTo(self.file)
+            self.download_to(self.output_file)
 
-    def downloadTo(self, file):
-        streamFile = self.stream.open()
-        bufferSize = 8192
+    def download_to(self, output_file):
+        stream_file = self.stream.open()
+        buffer_size = 8192
         data = b""
 
         while not self._cancel.is_set():
@@ -42,16 +44,16 @@ class DownloadThread(threading.Thread):
                 self._pause.clear()
                 continue
 
-            data = streamFile.read(bufferSize)
-            dataSize = len(data)
+            data = stream_file.read(buffer_size)
+            data_size = len(data)
 
-            if dataSize == 0:
+            if data_size == 0:
                 break
 
-            file.write(data)
+            output_file.write(data)
 
             # Use another variable because += is not thread-safe
-            newTotalSize = self.totalSize + dataSize
-            self.totalSize = newTotalSize
+            new_total_size = self.total_size + data_size
+            self.total_size = new_total_size
 
-        streamFile.close()
+        stream_file.close()

@@ -1,12 +1,14 @@
 import unittest
 from streamdownloader import thread
 
+
 class MockFile:
     def __init__(self):
         self.size = 0
 
     def write(self, data):
         self.size += len(data)
+
 
 class MockStreamFile:
     def __init__(self, size):
@@ -21,12 +23,14 @@ class MockStreamFile:
     def close(self):
         pass
 
+
 class MockStream:
     def __init__(self, size):
         self.size = size
 
     def open(self):
         return MockStreamFile(self.size)
+
 
 class TestDownloadThread(unittest.TestCase):
     TIMEOUT = 3
