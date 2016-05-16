@@ -63,9 +63,11 @@ class ResolutionDialog(tk.Toplevel):
         if not self.streams_thread.done:
             self.master.after(self.CHECK_INTERVAL, self.check_thread)
         elif self.streams_thread.plugin_error is not None:
-            self.status_label.config(text="Could not get streams from this URL")
+            self.status_label.config(text="Could not get streams from this URL",
+                                     foreground="red")
         elif self.streams_thread.no_plugin_error is not None:
-            self.status_label.config(text="This URL is currently not supported")
+            self.status_label.config(text="This URL is currently not supported",
+                                     foreground="red")
         else:
             self.streams = self.streams_thread.streams
             self.resolutions = list(self.streams)
