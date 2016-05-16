@@ -32,6 +32,7 @@ class DownloadThread(threading.Thread):
         self.output_file = output_file
         self.total_size = 0
         self.io_error = None
+        self.stream_error = None
         self._pause = threading.Event()
         self._resume = threading.Event()
         self._cancel = threading.Event()
@@ -62,7 +63,13 @@ class DownloadThread(threading.Thread):
         self.done = True
 
     def download_to(self, output_file):
-        stream_file = self.stream.open()
+        stream_file = None
+        try:
+            stream_file = self.stream.open()
+        except StreamError as stream_error:
+            self.stream_error = stream_error
+            return
+
         buffer_size = 8192
         data = b""
 
@@ -73,7 +80,12 @@ class DownloadThread(threading.Thread):
                 self._pause.clear()
                 continue
 
-            data = stream_file.read(buffer_size)
+            try:
+                data = stream_file.read(buffer_size)
+            except IOError as io_error:
+                self.io_error = io_error
+                break
+
             data_size = len(data)
 
             if data_size == 0:
