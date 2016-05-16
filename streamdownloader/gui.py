@@ -31,6 +31,7 @@ class ResolutionDialog(tk.Toplevel):
         # Ok button
         self.ok_button = ttk.Button(self, text="Ok", command=self.ok)
         self.ok_button.grid(row=2, column=0, sticky=(tk.W, tk.E))
+        self.ok_button.config(state=tk.DISABLED)
 
         # Cancel button
         self.cancel_button = ttk.Button(self, text="Cancel",
@@ -75,6 +76,7 @@ class ResolutionDialog(tk.Toplevel):
                 default_resolution = self.resolutions[0]
 
             self.status_label.config(text="Select resolution")
+            self.ok_button.config(state=tk.NORMAL)
 
             self.options = ttk.OptionMenu(self, self.resolution,
                                           default_resolution,
