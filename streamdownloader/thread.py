@@ -8,18 +8,19 @@ class StreamsThread(threading.Thread):
         threading.Thread.__init__(self)
         self.url = url
         self.done = False
-        self.error = None
+        self.plugin_error = None
+        self.no_plugin_error = None
         self.streams = None
 
     def run(self):
         try:
             streams = livestreamer.streams(self.url)
             self.streams = streams
-        except livestreamer.PluginError as plugin_error:
-            self.error = plugin_error
         except livestreamer.NoPluginError as no_plugin_error:
-            self.error = no_plugin_error
-
+            self.no_plugin_error = no_plugin_error
+        except livestreamer.PluginError as plugin_error:
+            self.plugin_error = plugin_error
+            
         self.done = True
 
 

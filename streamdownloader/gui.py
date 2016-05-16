@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from streamdownloader import thread
+
 
 def set_children_padding(object, padding_x, padding_y):
     for child in object.winfo_children():
@@ -8,8 +10,16 @@ def set_children_padding(object, padding_x, padding_y):
 
 
 class ResolutionDialog(tk.Toplevel):
-    def __init__(self, master):
+    CHECK_INTERVAL = 100
+
+    def __init__(self, master, url):
         tk.Toplevel.__init__(self, master)
+
+        self.url = url
+        self.stream = None
+        self.streams_thread = thread.StreamsThread(url)
+        self.streams_thread.start()
+        self.master.after(self.CHECK_INTERVAL, self.check_thread)
 
         # Label for displaying the status of the url checking thread
         self.status_label = ttk.Label(self, text="Checking URL...")
@@ -18,14 +28,11 @@ class ResolutionDialog(tk.Toplevel):
         # Options for resolution
         resolutions = ["foo", "bar", "baz", "foobar", "foobaz", "foobarbaz"]
         self.resolution = tk.StringVar()
-        self.options = ttk.OptionMenu(self, self.resolution, resolutions[0],
-                                      *resolutions)
-        self.options.grid(row=1, column=0, columnspan=2,
-                          sticky=(tk.W, tk.E))
 
         # Ok button
         self.ok_button = ttk.Button(self, text="Ok", command=self.ok)
         self.ok_button.grid(row=2, column=0, sticky=(tk.W, tk.E))
+        self.ok_button.config(state=tk.DISABLED)
 
         # Cancel button
         self.cancel_button = ttk.Button(self, text="Cancel",
@@ -53,7 +60,35 @@ class ResolutionDialog(tk.Toplevel):
         self.grab_set()
         self.focus()
 
+    def check_thread(self):
+        if not self.streams_thread.done:
+            self.master.after(self.CHECK_INTERVAL, self.check_thread)
+        elif self.streams_thread.plugin_error is not None:
+            self.status_label.config(text="Could not get streams from this URL",
+                                     foreground="red")
+        elif self.streams_thread.no_plugin_error is not None:
+            self.status_label.config(text="This URL is currently not supported",
+                                     foreground="red")
+        else:
+            self.streams = self.streams_thread.streams
+            self.resolutions = list(self.streams)
+            self.resolutions.sort()
+
+            default_resolution = "best"
+            if "best" not in self.resolutions:
+                default_resolution = self.resolutions[0]
+
+            self.status_label.config(text="Select resolution")
+            self.ok_button.config(state=tk.NORMAL)
+
+            self.options = ttk.OptionMenu(self, self.resolution,
+                                          default_resolution,
+                                          *self.resolutions)
+            self.options.grid(row=1, column=0, columnspan=2,
+                              sticky=(tk.W, tk.E))
+
     def ok(self):
+        self.stream = self.streams[self.resolution.get()]
         self.destroy()
 
     def cancel(self):
@@ -120,7 +155,7 @@ class MainWindow(ttk.Frame):
         pass
 
     def download_video(self):
-        self.dialog = ResolutionDialog(self)
+        self.dialog = ResolutionDialog(self, self.url_entry.get())
 
     def cancel_download(self):
         pass
