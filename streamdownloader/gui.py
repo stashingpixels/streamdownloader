@@ -68,11 +68,16 @@ class ResolutionDialog(tk.Toplevel):
         else:
             self.streams = self.streams_thread.streams
             self.resolutions = list(self.streams)
+            self.resolutions.sort()
+
+            default_resolution = "best"
+            if "best" not in self.resolutions:
+                default_resolution = self.resolutions[0]
 
             self.status_label.config(text="Select resolution")
 
             self.options = ttk.OptionMenu(self, self.resolution,
-                                          self.resolutions[0],
+                                          default_resolution,
                                           *self.resolutions)
             self.options.grid(row=1, column=0, columnspan=2,
                               sticky=(tk.W, tk.E))
