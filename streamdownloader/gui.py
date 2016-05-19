@@ -32,12 +32,10 @@ class ResolutionDialog(tk.Toplevel):
         resolutions = ["foo", "bar", "baz", "foobar", "foobaz", "foobarbaz"]
         self.resolution = tk.StringVar()
 
-        # Ok button
         self.ok_button = ttk.Button(self, text="Ok", command=self.ok)
         self.ok_button.grid(row=2, column=0, sticky=(tk.W, tk.E))
         self.ok_button.config(state=tk.DISABLED)
 
-        # Cancel button
         self.cancel_button = ttk.Button(self, text="Cancel",
                                         command=self.cancel)
         self.cancel_button.grid(row=2, column=1, sticky=(tk.W, tk.E))
@@ -52,7 +50,6 @@ class ResolutionDialog(tk.Toplevel):
         for i in range(0, 3):
             self.rowconfigure(i, weight=1)
 
-        # Configure self
         w = 300
         h = 100
 
@@ -101,6 +98,9 @@ class ResolutionDialog(tk.Toplevel):
 
 
 class MainWindow(ttk.Frame):
+    CHECK_INTERVAL = 500
+    task = None
+
     def __init__(self, master=None):
         ttk.Frame.__init__(self, master)
 
@@ -129,17 +129,15 @@ class MainWindow(ttk.Frame):
                                         command=self.browse_file)
         self.browse_button.grid(row=1, column=2, sticky=(tk.W, tk.E))
 
-        # The button to download the stream
         self.download_button = ttk.Button(self, text="Download",
                                           command=self.download_video)
         self.download_button.grid(row=2, column=0, columnspan=3,
                                   sticky=(tk.W, tk.E))
 
         # Label showing download progress
-        self.progress_label = ttk.Label(self, text="Downloading...")
+        self.progress_label = ttk.Label(self, text="")
         self.progress_label.grid(row=3, column=0, columnspan=3)
 
-        # Button to cancel download
         self.cancel_button = ttk.Button(self, text="Cancel",
                                         command=self.cancel_download)
         self.cancel_button.grid(row=4, column=0, columnspan=3,
@@ -154,7 +152,8 @@ class MainWindow(ttk.Frame):
         self.grid(row=0, column=0, sticky=(tk.W, tk.E))
 
     def handle_close(self):
-        self.master.destroy()
+        if self.task is None or self.cancel_download():
+            self.master.destroy()
 
     def browse_file(self):
         file_path = tk.filedialog.asksaveasfilename(filetypes=[
@@ -174,7 +173,71 @@ class MainWindow(ttk.Frame):
                                     "Cannot write to target file")
             return
 
-        self.dialog = ResolutionDialog(self, self.url_entry.get())
+        dialog = ResolutionDialog(self, self.url_entry.get())
+        self.wait_window(dialog)
+
+        stream = dialog.stream
+        if stream is not None:
+            self.url_entry.config(state=tk.DISABLED)
+            self.file_entry.config(state=tk.DISABLED)
+            self.browse_button.config(state=tk.DISABLED)
+            self.download_button.config(state=tk.DISABLED)
+            self.cancel_button.config(state=tk.NORMAL)
+            self.progress_label.config(text="Downloading...")
+
+            self.thread = thread.DownloadThread(stream, self.file_entry.get())
+            self.thread.start()
+            self.task = self.after(self.CHECK_INTERVAL, self.check_download)
+
+    def check_download(self):
+        total_size = self.thread.total_size
+        size_str = "{:.2f} MiB downloaded".format(total_size / 1024 ** 2)
+
+        if not self.thread.done:
+            progress_text = "Downloading... {}".format(size_str)
+            self.progress_label.config(text=progress_text)
+            self.task = self.after(self.CHECK_INTERVAL, self.check_download)
+        else:
+            progress_text = "Download complete ({})".format(size_str)
+            self.progress_label.config(text=progress_text)
+            self.task = None
+            self.restore_widgets()
+
+    def restore_widgets(self):
+        self.url_entry.config(state=tk.NORMAL)
+        self.file_entry.config(state=tk.NORMAL)
+        self.browse_button.config(state=tk.NORMAL)
+        self.download_button.config(state=tk.NORMAL)
+        self.cancel_button.config(state=tk.DISABLED)
 
     def cancel_download(self):
-        pass
+        if self.task is not None:
+            self.thread.pause()
+            message = ("Your download will be cancelled. Would you like to "
+                       "delete the file as well?")
+            result = tk.messagebox.askyesnocancel("Cancel download?", message)
+
+            if result is not None:
+                self.after_cancel(self.task)
+                self.task = None
+
+                self.thread.cancel()
+                self.thread.join()
+
+                self.progress_label.config(text="Download cancelled")
+                self.restore_widgets()
+
+                if result:
+                    try:
+                        os.remove(self.file_entry.get())
+                    except OSError:
+                        message = ("The file could not be deleted. You may "
+                                   "remove it manually when it is no longer "
+                                   "in use.")
+                        tk.messagebox.showwarning("Could not delete file",
+                                                  message)
+
+                return True
+            else:
+                self.thread.resume()
+        return False
