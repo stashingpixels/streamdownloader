@@ -20,6 +20,12 @@ the following at the command line:
 sudo apt-get install python3
 ```
 
+You might also need to install the python3-tk package:
+
+```
+sudo apt-get install python3-tk
+```
+
 Note that you will most likely need to replace the `python` and `pip` commands
 with `python3` and `pip3`.
 
